@@ -1,8 +1,8 @@
 <template>
   <el-container>
     <el-header>
-      <el-row>
-        <el-col :md="{span: 20,offset: 2}" :xs="24">
+      
+        
           <div class="header-main">
             <div class="left">
               <img
@@ -21,11 +21,10 @@
             </div>
             <div class="right">
               <router-link to='/userlogin'><el-button type="success" plain >个人登录</el-button></router-link>
-              <router-link to='/adminlogin' style="margin-left: 10px"><el-button type="success" plain>会议管理登录</el-button></router-link>
+              <router-link to='/meetinglogin' style="margin-left: 10px"><el-button type="success" plain>会议管理登录</el-button></router-link>
             </div>
           </div>
-        </el-col>
-      </el-row>
+        
     </el-header>
     <el-main>
       <router-view></router-view>
@@ -61,8 +60,7 @@
             </el-row>
             <el-row>
               <el-col :span="24">
-                <ul class="introduction-friends">
-              								<li>友情链接</li>
+                <ul class="introduction-friends">            	<li>友情链接</li>
 								<li><a target="_blank" href="//www.moe.gov.cn/">教育部 | </a></li>
 								<li><a target="_blank" href="//www.nsfc.gov.cn/">国家自然科学基金委 | </a></li>
 								<li><a target="_blank" href="//www.npopss-cn.gov.cn/">全国哲学社会科学工作办公室</a></li>
@@ -110,9 +108,12 @@ export default {
 <style lang="less" scoped>
 .el-main {
   padding: 0px;
+  min-width: 1200px;
 }
 .header-main {
-  position: relative;
+    width: 1200px;
+    height: 60px;
+    margin: 0 auto;
   .left {
     float: left;
     line-height: 60px;
@@ -157,12 +158,13 @@ export default {
 .el-footer {
   padding: 50px 0 0 0;
   background-color: #f5f5f5;
+  min-width: 1200px; 
 }
 .footer {
   background-color: #f5f5f5;
   height: 380px;
   color: #333;
-  min-width: 1200px; 
+  
   .introduction-list {
     
     li {

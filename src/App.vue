@@ -4,7 +4,6 @@
   </div>
 </template>
 <script>
-import { userInfo } from 'os';
 export default {
   provide() {
     return{
@@ -28,6 +27,9 @@ export default {
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+  html,body,#app {
+    min-height: 100%;
   }
   body {
     font-family: Helvetica,Arial,"微软雅黑","Microsoft YaHei"

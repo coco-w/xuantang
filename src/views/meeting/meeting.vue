@@ -44,62 +44,62 @@
         </div>
       </div>
     </el-header>
-    <el-main>
-      <div class="container">
-        <div class="sider">
+    <el-container>
+      <el-aside width="200px">
           <el-menu
             default-active="2"
             class="el-menu-vertical-demo"
-            @open="handleOpen"
-            @close="handleClose"
+            :default-openeds="openArr"
           >
-            <el-submenu index="1">
+          <template v-for="(item,index) in siderbarList" > 
+            <el-menu-item  v-if='item.child === undefined' :key="index"  :index="String(index)">
+              <i :class="item.icon"></i>
+              <span slot="title">{{item.title}}</span>
+            </el-menu-item>
+            <el-submenu v-else :index="String(index)" :key="index">
               <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
+                <i :class="item.icon"></i>
+                <span>{{item.title}}</span>
               </template>
-              <el-menu-item-group>
-                <template slot="title">分组一</template>
-                <el-menu-item index="1-1">选项1</el-menu-item>
-                <el-menu-item index="1-2">选项2</el-menu-item>
+              <el-menu-item-group class="group" v-for="(temp, key) in item.child" :key='key'>
+                <el-menu-item :index='merge(index,key)'>{{temp.title}}</el-menu-item>
               </el-menu-item-group>
-              <el-menu-item-group title="分组2">
-                <el-menu-item index="1-3">选项3</el-menu-item>
-              </el-menu-item-group>
-              <el-submenu index="1-4">
-                <template slot="title">选项4</template>
-                <el-menu-item index="1-4-1">选项1</el-menu-item>
-              </el-submenu>
             </el-submenu>
-            <el-menu-item index="2">
-              <i class="el-icon-menu"></i>
-              <span slot="title">导航二</span>
-            </el-menu-item>
-            <el-menu-item index="3" disabled>
-              <i class="el-icon-document"></i>
-              <span slot="title">导航三</span>
-            </el-menu-item>
-            <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <span slot="title">导航四</span>
-            </el-menu-item>
+          </template>
           </el-menu>
-        </div>
-      </div>
-    </el-main>
+      </el-aside>
+            <el-main>
+              <router-view></router-view>
+            </el-main>
+    </el-container>
   </el-container>
 </template>
 <script>
+import{ siderbarList } from '@/const/siderbar.js'
 export default {
   name: "",
   data() {
     return {
-      switchValue: true
+      switchValue: true,
+      siderbarList,
     };
+  },
+  computed: {
+    openArr() {
+      return ['1','2','3','4','5','6','7']
+    }
+  },
+  methods: {
+    merge(num1,num2) {
+      return `${num1}_${num2}`
+    }
   }
 };
 </script>
 <style lang="less" scoped>
+.app {
+
+}
 .el-header {
   background: #fff;
   border-bottom: 5px solid #1aad19;
@@ -181,13 +181,30 @@ export default {
       }
     }
   }
-  
 }
-.container {
+.el-container{
+  height: 100%;
+  background: #E0E0E0;
+  .el-container {
+    height: 100%;
     width: 1200px;
     margin: auto;
-    .sider {
-      width: 200px;
+    padding-top: 10px;
+    .el-main {
+      padding: 0;
+      margin-left: 25px;
     }
   }
+}
+/deep/.el-menu-vertical-demo.el-menu {
+  padding: 20px 0;
+   /deep/.el-menu-item-group__title {
+  padding: 0;
+  }
+  /deep/.el-menu-item,/deep/.el-submenu__title  {
+    height: 40px;
+    line-height: 40px;
+  }
+}
+
 </style>

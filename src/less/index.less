@@ -1,0 +1,57 @@
+.top-topic {
+  display: inline-block;
+  position: relative;
+  margin-left: 20px;
+  .topic-text {
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+    height: 38px;
+    border-left: 1px dotted #fff;
+    border-right: 1px dotted #fff;
+    line-height: 38px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #65B76F;
+    &::after {
+      content: '';
+      position: absolute;
+      right: -21px;
+      height: 38px;
+      width: 20px;
+      background-color: #65B76F;
+      top: 0;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      left: -21px;
+      height: 38px;
+      width: 20px;
+      background-color: #65B76F;
+    }
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    border-radius: 0 20px 20px 0;
+    background-color: #fff;
+    top: 9px;
+    left: -20px;
+    z-index: 6;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    border-radius: 20px 0 0 20px;
+    background-color: #fff;
+    top: 9px;
+    right: -20px;
+    z-index: 6;
+  }
+}

@@ -19,19 +19,41 @@ export default [
       {
         path: '/meetinglogin',
         name: 'meetinglogin',
-        component: () => import('@/views/meetingLogin.vue')
+        component: () => import('@/views/meeting/meetingLogin.vue')
       }
     ]
   },
   {
     path: '/meeting/index',
     name: 'metting',
-    component: () => import('@/views/meetingIndex.vue')
+    component: () => import('@/views/meeting/meetingIndex.vue')
   },
   {
-    path: '/userAnalysis',
-    name: 'userAnalysis',
-    component: () => import('@/views/userAnalysis.vue')
+    path: '/meeting',
+    name: 'meeting',
+    component: () => import('@/views/meeting/meeting.vue'),
+    children: [
+      {
+        path: '/meeting/userAnalysis',
+        name: 'userAnalysis',
+        component: () => import('@/views/meeting/userAnalysis.vue')
+      },
+      {
+        path: '/meeting/homePageSetting',
+        name: 'homePageSetting',
+        component: () => import('@/views/meeting/homePageSetting.vue')
+      },
+      {
+        path: '/meeting/beforeMeeting/invitation',
+        name: 'invitation',
+        component: () => import('@/views/meeting/signUp/invitation.vue')
+      },
+      {
+        path: '/meeting/beforeMeeting/invitation/setUp',
+        name: 'setUp',
+        component: () => import('@/views/meeting/signUp/setUp.vue')
+      }
+    ]
   }
   
 ]

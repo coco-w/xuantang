@@ -217,7 +217,7 @@ export default {
     }
     .share {
       display: inline-block;
-      height: 185px;
+      height: 194px;
       overflow: hidden;
       .phone {
         width: 200px;

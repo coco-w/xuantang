@@ -49,20 +49,27 @@
           <el-menu
             default-active="2"
             class="el-menu-vertical-demo"
+            :router='true'
             :default-openeds="openArr"
           >
           <template v-for="(item,index) in siderbarList" > 
-            <el-menu-item  v-if='item.child === undefined' :key="index"  :index="String(index)">
-              <i :class="item.icon"></i>
-              <span slot="title">{{item.title}}</span>
+            <el-menu-item :route="{name: item.link}"  v-if='item.child === undefined' :key="index"  :index="String(index)">
+              <svg class="icon" aria-hidden="true">
+                  <use :xlink:href="item.icon"></use>
+              </svg>
+              <span  slot="title">{{item.title}}</span>
             </el-menu-item>
             <el-submenu v-else :index="String(index)" :key="index">
               <template slot="title">
-                <i :class="item.icon"></i>
+                <svg class="icon" aria-hidden="true">
+                    <use :xlink:href="item.icon"></use>
+                </svg>
                 <span>{{item.title}}</span>
               </template>
               <el-menu-item-group class="group" v-for="(temp, key) in item.child" :key='key'>
-                <el-menu-item :index='merge(index,key)'>{{temp.title}}</el-menu-item>
+                <el-menu-item :route="{name: temp.link}" :index='merge(index,key)'>
+                  <span>{{temp.title}}</span>
+                </el-menu-item>
               </el-menu-item-group>
             </el-submenu>
           </template>
@@ -206,5 +213,8 @@ export default {
     line-height: 40px;
   }
 }
-
+.icon {
+  width: 2em;
+  height: 1.5em;
+}
 </style>

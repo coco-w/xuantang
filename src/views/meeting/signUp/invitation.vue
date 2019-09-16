@@ -18,7 +18,7 @@
             <span v-show="regist">关闭报名通道</span>
             <span v-show="!regist">开启报名通道</span>
           </el-button>
-          <el-button>修改报名设置</el-button>
+          <el-button><router-link :to="{name: 'setUp'}">修改报名设置</router-link></el-button>
         </div>
       </div>
     </div>
@@ -268,6 +268,9 @@ export default {
             width: 130%;
             transform: scale(0.7);
             margin-left: -27px;
+            p {
+              color:#fff;
+            }
           }
           .wechatCon-title {
             font-size: 15px;    

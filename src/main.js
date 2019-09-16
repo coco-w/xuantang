@@ -7,6 +7,7 @@ import echarts from 'echarts'
 import '@/less/index.less'
 import 'element-ui/lib/theme-chalk/index.css';
 import 'element-ui/lib/theme-chalk/display.css';
+import './assets/iconfont/iconfont.js'
 
 if (process.env.NODE_ENV !== 'production') require ('./mock')
 

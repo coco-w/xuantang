@@ -14,14 +14,14 @@
           <div class="basic-title">是否收费</div>
           <div class="basic-tip">开启后，可以设置多种缴费价格类型</div>
           <div class="basic-right">
-            <el-switch v-model="value" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            <el-switch v-model="pay" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </div>
         </div>
         <div class="basic-table-row">
           <div class="basic-title">是否开具发票</div>
           <div class="basic-tip">开启后，将向参会人员搜集发票抬头信息，并自动匹配纳税人识别号</div>
           <div class="basic-right">
-            <el-switch v-model="value" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            <el-switch v-model="invoice" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </div>
         </div>
       </div>
@@ -33,17 +33,17 @@
       <my-table :options="enrollOptions">
         <template slot="title">
           <el-button @click="showQuick = true">添加快捷项</el-button>
-          <el-button @click="showAdd = true">自定义添加</el-button>
+          <el-button @click="handleShowAdd(enrollOptions)">自定义添加</el-button>
         </template>
       </my-table>
     </div>
-    <div class="pay card">
+    <div class="pay card" v-show="pay">
       <div class="top-topic">
         <div class="topic-text">缴费设置</div>
       </div>
       <my-table :options="payOptions">
         <template slot="title">
-          <el-button >添加</el-button>
+          <el-button @click="showPayMode = true" >添加</el-button>
         </template>
       </my-table>
       <div class="payMode">
@@ -54,12 +54,16 @@
         <el-row class="payRow">
           <el-col :span="3">转账汇款</el-col>
           <el-col :span="18">参会人可在手机或PC端缴费页面，看到转账有关信息</el-col>
-          <el-col :span="3">修改账号</el-col>
+          <el-col :span="3">
+            <el-button @click="handlePayAccount">修改账号</el-button>
+          </el-col>
         </el-row>
          <el-row class="payRow">
           <el-col :span="3">现场缴费</el-col>
           <el-col :span="18">参会人可在手机或PC端缴费页面，看到现场缴费有关信息</el-col>
-          <el-col :span="3">修改说明</el-col>
+          <el-col :span="3" >
+            <el-button @click="handlePayExplaint">修改说明</el-button>
+          </el-col>
         </el-row>
       </div>
       <div>
@@ -71,11 +75,20 @@
         </div>
       </div>
     </div>
-    <div class="invoice card">
+    <div class="invoice card" v-show="invoice && pay">
       <div class="top-topic">
         <div class="topic-text">发票设置</div>
         
       </div>
+      <my-table :options="invoiceOptions">
+        <template slot="title">
+          <el-button @click="handleShowAdd(invoiceOptions)">自定义添加</el-button>
+        </template>
+      </my-table>
+    </div>
+    <div class="footer">
+      <el-button  type="danger" size="medium">取消</el-button>
+      <el-button  type="success" size="medium">提交</el-button>
     </div>
     <el-dialog
       title="提示"
@@ -93,7 +106,7 @@
         <el-button type="primary" @click="handleQuickAdd">确 定</el-button>
       </span>
     </el-dialog>
-      <el-dialog
+    <el-dialog
       title="报名项设置"
       :visible.sync="showAdd"
       width="45%"
@@ -128,6 +141,104 @@
         <el-button type="primary" @click="handleAdd">确 定</el-button>
       </span>
     </el-dialog>
+     <el-dialog
+      title="缴费设置"
+      :visible.sync="showPayMode"
+      width="45%"
+      :close-on-click-modal="false">
+      <el-form :model="payModeForm"  label-width="110px"  ref="paymode"  label-position="left" :rules="rules">
+        <el-form-item label="价格类型名称" prop="type">
+          <el-input v-model="payModeForm.type"></el-input>
+        </el-form-item>
+         <el-form-item label="金额" prop="amount">
+          <el-input v-model="payModeForm.amount"></el-input>
+        </el-form-item>
+         <el-form-item label="备注">
+          <el-input v-model="payModeForm.remark" type="textarea" :autosize="{ minRows: 2}" ></el-input>
+        </el-form-item>
+        <el-form-item label="本价格允许的缴费方式：" label-width="200px">
+           <el-radio-group v-model="payModeForm.method">
+            <el-radio :label="1">在线支付</el-radio>
+            <el-radio :label="2">转账汇款</el-radio>
+            <el-radio :label="3">现场缴费</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item prop="term">
+          <el-switch
+            v-model="payModeForm.showTerm"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+          <span style="margin-left:25px">是否设置价格有效期？超出有效期后参会人员将无法选择此价格</span>
+          <div>
+            <el-date-picker
+              v-show="payModeForm.showTerm"
+              v-model="payModeForm.term"
+              value-format="timestamp"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <el-switch
+            v-model="payModeForm.examine"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+          <span style="margin-left:25px">开启后，您需要在人员管理模块对选择此价格的参会人进行审核</span>
+        </el-form-item>
+        <el-form-item>
+          <el-switch
+            v-model="payModeForm.supplement"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+          <span style="margin-left:25px">是否要求选择此价格的参会人补充填写有关信息</span>
+        </el-form-item>
+      </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="handlePayModeCancel">取 消</el-button>
+          <el-button type="primary" @click="addPayMode" >确 定</el-button>
+        </span>
+    </el-dialog>
+    <el-dialog
+      title="请填写收款账号信息"
+      :visible.sync="showPayAccount"
+      width="30%"
+      :close-on-click-modal="false">
+      <el-form label-width="100px">
+        <el-form-item label="账户">
+          <el-input v-model="payAccount2.account"></el-input>
+        </el-form-item>
+        <el-form-item label="账户名称">
+          <el-input v-model="payAccount2.titleOfAccount"></el-input>
+        </el-form-item>
+        <el-form-item label="开户行">
+          <el-input v-model="payAccount2.OpeningBank"></el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="payAccount2.remark" ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showPayAccount = false">取 消</el-button>
+        <el-button type="primary" @click="handlePayAccountUpdate">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="现场缴费说明"
+      :visible.sync="showPayExplaint"
+      width="30%"
+      :close-on-click-modal="false">
+      <el-input type="textarea" :autosize="{ minRows: 4}" v-model="PayExplaint2"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showPayExplaint = false">取 消</el-button>
+        <el-button type="primary" @click="handlePayExplaintUpdate">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -137,11 +248,66 @@ import clonedeep from 'clonedeep'
 export default {
   name: "setUp",
   data() {
+    let checkAge = (rule, value, callback) => {
+        if (!Number(value)) {
+          callback(new Error('请输入数字值'));
+        } else {
+          callback();
+        }
+    }
+    let checkTerm = (rule, value, callback) => {
+        if (!value && this.payModeForm.showTerm) {
+          callback(new Error('请选择日期'));
+        } else {
+          callback();
+        }
+    } 
     return {
       value: true,
       showQuick: false,
       showAdd: false,
+      showPayMode: false,
+      pay: true,
+      invoice: true,
       checked: [],
+      showPayAccount:false,
+      showPayExplaint: false,
+      activeOptions: null,
+      PayExplaint: '现场缴费请在会议指定地点的签到台完成缴费',      
+      PayExplaint2: '',
+      payModeForm: {
+        type: '',
+        amount: "",
+        method: 3,
+        examine: false,
+        showTerm: false,
+        remark: "",
+        supplement: false,
+        term: null,
+        operation: true,
+      },
+      payAccount2: {
+
+      },
+      payAccount: {
+        account: '800316206802019',
+        titleOfAccount: '湖南鹰研数据有限公司',
+        OpeningBank: '长沙银行友谊支行',
+        remark: '',
+      },
+      rules: {
+          type: [
+            { required: true, message: '请输入价格类型名称', trigger: 'blur' },
+            { max: 20, message: '最多 20 个字符', trigger: 'blur' }
+          ],
+          amount: [
+            { required: true, message: '请输入金额', trigger: 'blur' },
+            { validator: checkAge, trigger: 'blur' }
+          ],
+          term: [
+            { validator: checkTerm, trigger: 'blur' }
+          ]
+        },
       addForm: {
         type: "1",
         selectType: "1",
@@ -321,29 +487,32 @@ export default {
           {
             type: "教师及企业代表",
             amount: "500",
-            method: "1",
+            method: 1,
             examine: true,
             supplement: false,
             term: [1568114903000,1568201303000],
             operation: true,
+            index: 0,
           },
            {
             type: "教师及企业代表",
             amount: "500",
-            method: "3",
+            method: 3,
             examine: true,
             supplement: false,
             term: [1568114903000,1568978903000],
             operation: true,
+            index: 1,
           },
            {
             type: "教师及企业代表",
             amount: "500",
-            method: "2",
+            method: 2,
             examine: false,
             supplement: true,
             term: [1568114903000,1568201303000],
             operation: true,
+            index: 2,
           }
         ],
         tableProps: [
@@ -377,7 +546,8 @@ export default {
             label: "缴费方式",
             slot: true,
             render: (h, { row, column, index, item }) => {
-              switch (row.method) {
+              let a = String(row.method)
+              switch (a) {
                 case "1":
                   return (
                     <div>在线支付</div>
@@ -437,29 +607,37 @@ export default {
             slot: true,
             width: "250px",
             render: (h, { row, column, index, item }) => {
-              console.log(row.term)
-              let time1= this.getLocalTime(row.term[0])
-              let time2= this.getLocalTime(row.term[1])
-              let outDate = new Date().getTime() - row.term[1]
-              console.log(outDate)
-              if (outDate > 0) {
+              if (row.showTerm) {
+                let time1= this.getLocalTime(row.term[0])
+                let time2= this.getLocalTime(row.term[1])
+                let outDate = new Date().getTime() - row.term[1]
+                console.log(outDate)
+                if (outDate > 0) {
+                  return (
+                    <div style="text-align: center">
+                      <p>{time1}</p>
+                      <p>至</p>
+                      <p>{time2}</p>
+                      <p style="color:#ff0000">(已失效)</p>
+                    </div>
+                  )
+                } else {
+                  return (
+                    <div style="text-align: center">
+                      <p>{time1}</p>
+                      <p>至</p>
+                      <p>{time2}</p>
+                    </div>
+                  )
+                }
+              }else {
                 return (
-                  <div style="text-align: center">
-                    <p>{time1}</p>
-                    <p>至</p>
-                    <p>{time2}</p>
-                    <p style="color:#ff0000">(已失效)</p>
-                  </div>
-                )
-              } else {
-                return (
-                  <div style="text-align: center">
-                    <p>{time1}</p>
-                    <p>至</p>
-                    <p>{time2}</p>
+                  <div>
+                    报名截止前有效
                   </div>
                 )
               }
+              
             }
           },
           {
@@ -473,8 +651,156 @@ export default {
                   placement="bottom"
                   trigger="click"
                   width="150">
-                  <el-button >修改</el-button>
-                  <el-button >删除</el-button>
+                  <el-button on-click={this.handlePayModeUpdate.bind(this,row)}>修改</el-button>
+                  <el-button on-click={this.handlePayModeDelete.bind(this,row)}>删除</el-button>
+                  <i slot="reference" style="cursor: pointer;" class="el-icon-more"></i>
+                </el-popover>
+                )
+              }else {
+                return (
+                  <div>不可操作</div>
+                )
+              }
+            }
+          }
+        ]
+      },
+      invoiceOptions: {
+        title: {
+          text: '发票信息项'
+        },
+        tableData: [
+          {
+            index: '1',
+            entry: '发票类型',
+            type: '2',
+            required: "是",
+            remarks: '',
+            operation: false,
+          },
+          {
+            index: '2',
+            entry: '发票抬头',
+            type: '1',
+            required: "是",
+            remarks: '',
+            operation: false,
+          },
+          {
+            index: '3',
+            entry: '纳税人识别号',
+            type: '1',
+            required: false,
+            remarks: '',
+            operation: false,
+          },
+        ],
+        tableProps: [
+          {
+            prop: "index",
+            label: "序号",
+            slot: true,
+            render: (h, { row, column, index, item }) => {
+              return (
+                <div>{index + 1}</div>
+              )
+            }
+          },
+          {
+            prop:"entry",
+            label: '报名项名称',
+            slot: true,
+            render: (h, {row, column, index, item }) => {
+              let str = ''
+              if (row.remarks != '') {
+                str = `(${row.remarks})`
+              }
+              if (row.required === true || row.required === "是") {
+                return (
+                  <div><span style="color: #ff0000">*</span>{row.entry}
+                  <div style="color: #56b78f">{str}</div>
+                  </div>
+                )
+              }else {
+                return (
+                  <div>{row.entry}
+                    <div style="color: #56b78f">{str}</div>
+                  </div>
+                )
+              }
+            }
+          },
+          {
+            prop:"type",
+            label: '报名项类型',
+            slot: true,
+            render: (h, {row, column, index, item }) => {
+              let str = ""
+              switch (row.type) {
+                case "1":
+                  str="填空"
+                  break;
+                case "2":
+                  str="单选"
+                  break;
+                case "3":
+                  str="多选"
+                  break;
+                case "4":
+                  str="日期"
+                  break;
+                default:
+                  break;
+              }
+              return (
+                <div>{str}</div>
+              )
+            }
+          },
+          {
+            porp: "required",
+            label: "报名人是否必填",
+            width: '180',
+            slot: true,
+            render: (h, { row, column, index, item }) => {
+              if (row.required === true) {
+                return (
+                  <elSwitch 
+                  vModel={row.required}
+                  >
+                  </elSwitch>
+                )
+              }else if (typeof row.required === 'string') {
+                return (
+                  <div>
+                    {row.required}
+                  </div>
+                )
+              }
+              else {
+                return (
+                   <elSwitch 
+                  vModel={row.required}
+                  >
+                  </elSwitch>
+                )
+              }
+             
+            }
+          },
+          {
+            prop:"operation",
+            label:"操作",
+            slot: true,
+            render: (h, {row, column, index, item }) => {
+              if (row.operation) {
+                return (
+                 <el-popover
+                  placement="bottom"
+                  trigger="click"
+                  width="150">
+                  <el-button on-click={this.handleUpdate.bind(this, row)}>修改</el-button>
+                  <el-button on-click={this.handleDelete.bind(this, row)}>删除</el-button>
                   <i slot="reference" style="  cursor: pointer;" class="el-icon-more"></i>
                 </el-popover>
                 )
@@ -513,13 +839,15 @@ export default {
           return
         } 
       }
-      this.addForm.remarks.trim()
-      if (this.addForm.index) {
+      
+        this.addForm.remarks.trim()
+      
+      if (this.addForm.index > -1) {
         let index = Number(this.addForm.index) - 1
-        this.enrollOptions.tableData.splice(index,1,this.addForm)
+        this.activeOptions.tableData.splice(index,1,this.addForm)
       }else {
-        this.addForm.index = this.enrollOptions.tableData.length+1
-        this.enrollOptions.tableData.push(this.addForm)
+        this.addForm.index = this.activeOptions.tableData.length+1
+        this.activeOptions.tableData.push(this.addForm)
       }
       this.addForm = {
         type: "1",
@@ -527,6 +855,7 @@ export default {
         entry: '',
         required: true,
         operation: true,
+        remarks: "",
         options: [
           {
             value: '',
@@ -550,6 +879,7 @@ export default {
         entry: '',
         required: true,
         operation: true,
+        remarks: "",
         options: [
           {
             value: '',
@@ -608,6 +938,95 @@ export default {
           });          
         });
      
+    },
+    addPayMode() {
+      this.$refs.paymode.validate((valid) => {
+        if (valid) {
+          if (this.payModeForm.index > -1) {
+            this.payOptions.tableData.splice(this.payModeForm.index,1,this.payModeForm)
+          }else {
+            this.payModeForm.index = this.payOptions.tableData.length
+            this.payOptions.tableData.push(this.payModeForm)
+          }
+          this.showPayMode = false
+            this.payModeForm = {
+              type: '',
+              amount: "",
+              method: 3,
+              examine: false,
+              showTerm: false,
+              remark: "",
+              supplement: false,
+              term: null,
+              operation: true,
+            }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      })
+    },
+    handlePayModeCancel() {
+      this.showPayMode = false
+      this.payModeForm = {
+        type: '',
+        amount: "",
+        method: 3,
+        examine: false,
+        showTerm: false,
+        remark: "",
+        supplement: false,
+        term: null,
+        operation: true,
+      }
+    },
+    handlePayModeUpdate(row) {
+      console.log(clonedeep(row))
+      this.payModeForm = clonedeep(row)
+      this.showPayMode = true
+    },
+    handlePayModeDelete(row) {
+      this.$confirm('此操作将永久删除该报名信息项, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let index = Number(row.index)
+          this.payOptions.tableData.splice(index,1)
+          this.payOptions.tableData.forEach((ele,index) => {
+            let a = index
+            ele.index = a
+          })
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
+    handlePayAccount() {
+      this.payAccount2 = clonedeep(this.payAccount)
+      this.showPayAccount = true
+    },
+    handlePayAccountUpdate() {
+      this.payAccount = clonedeep(this.payAccount2)
+      this.showPayAccount = false
+    },
+    handlePayExplaint() {
+      this.PayExplaint2 = clonedeep(this.PayExplaint)
+      this.showPayExplaint = true
+    },
+    handlePayExplaintUpdate() {
+      this.PayExplaint = clonedeep(this.PayExplaint2)
+      this.showPayExplaint = false
+    },
+    handleShowAdd(options) {
+      this.showAdd = true
+      this.activeOptions = options
     }
   }
 };
@@ -626,10 +1045,10 @@ export default {
 .basic {
   .basic-table {
     margin-top: 15px;
-    border: 1px solid #999;
+    border: 1px solid #EBEEF5;
     .basic-table-row {
       padding: 0 15px;
-      border-bottom: 1px solid #999;
+      border-bottom: 1px solid #EBEEF5;
       height: 50px;
       line-height: 50px;
       &:nth-last-child(1) {
@@ -670,12 +1089,25 @@ export default {
     margin-left: 32px;
   }
 }
+.payMode {
+  
+}
 .payRow {
-  margin-top: 8px;
-  padding: 0 20px;
+  
+  padding: 4px 20px;
+  line-height: 40px;
+  border: 1px solid #EBEEF5;
+  
   div:nth-child(2) {
     color: #666;
     font-size: 14px;
   }
+  &:last-child {
+    border-top: none;
+  }
+}
+.footer {
+  text-align: center;
+  margin: 40px 0 100px 0;
 }
 </style>

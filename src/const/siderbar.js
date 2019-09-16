@@ -1,18 +1,21 @@
 export const siderbarList = [
   {
     title: '数据仪表盘',
-    icon: 'el-icon-menu',
+    icon: '#icon-shuju',
+    link: 'userAnalysis',
   },
   {
     title: '邀请函设置',
-    icon: 'el-icon-menu',
+    icon: '#icon-shezhi',
+    link: 'homePageSetting'
   },
   {
     title: '报名注册',
-    icon: 'el-icon-menu',
+    icon: '#icon-zhuce',
     child: [
       {
         title: '报名表设置',
+        link: 'invitation',
       },
       {
         title: '嘉宾邀请',
@@ -24,7 +27,7 @@ export const siderbarList = [
   },
   {
     title: '投稿评审',
-    icon: 'el-icon-menu',
+    icon: '#icon-pingshen',
     child: [
       {
         title: '投稿设置',
@@ -42,7 +45,7 @@ export const siderbarList = [
   },
   {
     title: '交流共享',
-    icon: 'el-icon-menu',
+    icon: '#icon-IOCN7',
     child: [
       {
         title: '公告动态',
@@ -57,7 +60,7 @@ export const siderbarList = [
   },
   {
     title: '通知发布',
-    icon: 'el-icon-menu',
+    icon: '#icon-tongzhi',
     child: [
       {
         title: '微信通知',
@@ -72,7 +75,7 @@ export const siderbarList = [
   },
   {
     title: '签到认证',
-    icon: 'el-icon-menu',
+    icon: '#icon-qiandao',
     child: [
       {
         title: '现场签到',
@@ -81,7 +84,7 @@ export const siderbarList = [
   },
   {
     title: '趣味互动',
-    icon: 'el-icon-menu',
+    icon: '#icon-hudong',
     child: [
       {
         title: '现场互动',

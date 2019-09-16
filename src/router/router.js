@@ -52,6 +52,11 @@ export default [
         path: '/meeting/beforeMeeting/invitation/setUp',
         name: 'setUp',
         component: () => import('@/views/meeting/signUp/setUp.vue')
+      },
+      {
+        path: '/meeting/beforeMeeting/guests',
+        name: 'guests',
+        component: () => import('@/views/meeting/guests/guests.vue')
       }
     ]
   }

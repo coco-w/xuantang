@@ -1,8 +1,6 @@
 <template>
   <el-container>
     <el-header>
-      
-        
           <div class="header-main">
             <div class="left">
               <img

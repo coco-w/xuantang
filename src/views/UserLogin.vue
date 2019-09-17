@@ -12,44 +12,13 @@
                 class="teno-selectEmailLogin-btn"
                 @click="emailLogin_step_1"
               >
-                <svg
-                  t="1566143684933"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="1968"
-                  width="200"
-                  height="200"
-                >
-                  <path
-                    d="M153.236734 163.111422l714.763665 0c48.810633 0 88.718697 38.475467 89.332667 85.853503l-446.458679 242.518237L64.313381 249.169581C64.722694 201.689218 104.323773 163.111422 153.236734 163.111422L153.236734 163.111422zM64.313381 341.981413l-0.409313 429.062856c0 47.787349 40.215049 86.876786 89.332667 86.876786l714.763665 0c49.117618 0 89.332667-39.089437 89.332667-86.876786L957.333067 341.776756 521.311882 573.038873c-6.651344 3.581493-14.735285 3.581493-21.386629 0L64.313381 341.981413 64.313381 341.981413zM64.313381 341.981413"
-                    p-id="1969"
-                    fill="#ffffff"
-                  />
-                </svg>&nbsp;&nbsp;使用邮箱登录
+               <svg class="icon" aria-hidden="true">
+                  <use xlink:href="#icon-youjian"></use>
+              </svg>&nbsp;&nbsp;使用邮箱登录
               </div>
               <div @click="handleWechat" id="selectWechatLoginButton-index-login" class="teno-selectWechatLogin-btn">
-                <svg
-                  t="1566143501015"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="899"
-                  width="200"
-                  height="200"
-                >
-                  <path
-                    d="M1010.8 628c0-141.2-141.3-256.2-299.9-256.2-168 0-300.3 115.1-300.3 256.2 0 141.4 132.3 256.2 300.3 256.2 35.2 0 70.7-8.9 106-17.7l96.8 53-26.6-88.2c70.9-53.2 123.7-123.7 123.7-203.3zM618 588.8c-22.1 0-40-17.9-40-40s17.9-40 40-40 40 17.9 40 40c0 22-17.9 40-40 40z m194.3-0.3c-22.1 0-40-17.9-40-40s17.9-40 40-40 40 17.9 40 40-17.9 40-40 40z"
-                    fill="#ffffff"
-                    p-id="900"
-                  />
-                  <path
-                    d="M366.3 106.9c-194.1 0-353.1 132.3-353.1 300.3 0 97 52.9 176.6 141.3 238.4l-35.3 106.2 123.4-61.9c44.2 8.7 79.6 17.7 123.7 17.7 11.1 0 22.1-0.5 33-1.4-6.9-23.6-10.9-48.3-10.9-74 0-154.3 132.5-279.5 300.2-279.5 11.5 0 22.8 0.8 34 2.1C692 212.6 539.9 106.9 366.3 106.9zM247.7 349.2c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z m246.6 0c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z"
-                    fill="#ffffff"
-                    p-id="901"
-                  />
+                <svg class="icon" aria-hidden="true">
+                  <use xlink:href="#icon-weixin"></use>
                 </svg>&nbsp;&nbsp;使用微信登录
               </div>
             </div>
@@ -60,6 +29,7 @@
                 </div>
               </div>
               <input v-model="email" type="text" placeholder="请输入邮箱地址" />
+              <div v-show="!emailFormat"><span style="color:#ff0000">请输入正确的邮箱格式</span></div>
               <div>
                 <el-button
                   type="success"
@@ -120,9 +90,8 @@
               <el-button
               type="success"
               round
-              
               style="height: 48px; width:240px; font-size: 24px; margin-top: 30px"
-            >注册</el-button>
+            >登录</el-button>
             </div>
           </div>
         </div>
@@ -140,9 +109,11 @@ export default {
       email_step_2: false,
       wechat: false,
       email: '',
+      emailFormat: true,
       email_password: '',
       checked: true,
       submit: false,
+      first: false,
     };
   },
   methods: {
@@ -151,8 +122,21 @@ export default {
       this.email_step_1 = true
     },
     emailLogin_step_2() {
-      this.email_step_1 = false
-      this.email_step_2 = true
+      let myReg=/^[a-zA-Z0-9_-]+@([a-zA-Z0-9]+\.)+(com|cn|net|org)$/
+      if (myReg.test(this.email)) {
+        this.emailFormat = true
+        this.email_step_1 = false
+        let a = Math.random()
+        if (a > 0.3) {
+          this.submit = true
+        }else {
+          this.email_step_2 = true
+        }
+        
+      }else {
+        this.emailFormat = false
+      }
+      
     },
     handleModify() {
       this.email_step_1 = true
@@ -189,7 +173,7 @@ export default {
   margin: 20px;
   display: inline-block;
   width: 340px;
-  height: 380px;
+  height: 300px;
   position: absolute;
   font-size: 14px;
   color: #666;

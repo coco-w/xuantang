@@ -31,10 +31,10 @@
     </el-header>
     <el-main>
       <div class="course-header">
-        <span>进行中</span>
-        <span>已结束</span>
+        <span @click="handelSwitchClass(1)" :style="{color: acitve ? '#519259' : ''}">进行中</span>
+        <span @click="handelSwitchClass(2)" :style="{color: acitve ? '' : '#519259'}">已结束</span>
       </div>
-      <div :style="{padding:'0 40px'}">
+      <div v-if="isMeeting" :style="{padding:'0 40px'}" @click="centerDialogVisible = true">
         <div class="panel panel-my panel-create panel-border-CCCCCC">
           <div class="panel-createCourse">
             <div class="text-center panel-createCourseIconContainer">
@@ -101,23 +101,207 @@
         </div>
       </div>
     </el-main>
+    <el-dialog
+      title="请输入会议活动的基本信息"
+      :visible.sync="centerDialogVisible"
+      width="40%"
+      center>
+      <el-form :model="mettingForm" ref="form" label-width="120px" :rules="rules">
+        <el-form-item label="会议活动名称" prop="title">
+          <el-input v-model="mettingForm.title" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item label="会议活动时间" prop="date">
+          <el-date-picker
+              v-model="mettingForm.date"
+              value-format="timestamp"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+        </el-form-item>
+        <el-form-item label="会议活动地址" prop="address">
+          <el-input v-model="mettingForm.address" placeholder=""></el-input>
+        </el-form-item>
+        <el-form-item label="头像">
+          <div class="avatar"><el-avatar ref="avatar" :size="50" :src="mettingForm.logo"></el-avatar></div>
+          <el-upload
+            class="upload"
+            ref="upload"
+            action="https://jsonplaceholder.typicode.com/posts/"
+            :limit="1"
+            :show-file-list="false"
+            :on-success="handlePictureSuccess"
+            :before-upload="beforeAvatarUpload"
+            :on-change="fileChange"
+            >
+            <el-button  size="small" type="primary">选取文件</el-button>
+            <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSubmitMeeting">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+    title="设置头像"
+    :visible.sync="DialogVisible"
+    width="800px"
+    center>
+     <el-row>
+       <el-col :span="18">
+         <div class="vue-cropper-content">
+        <vue-cropper
+        ref="cropper"
+        :img="option.img"
+        :outputSize="option.outputSize"
+        :outputType="option.outputType"
+        :info="option.info"
+        :canScale="option.canScale"
+        :autoCrop="option.autoCrop"
+        :autoCropWidth="option.autoCropWidth"
+        :autoCropHeight="option.autoCropHeight"
+        :fixed="option.fixed"
+        :fixedNumber="option.fixedNumber"
+        :canMove="option.canMove"
+        @real-time="realTime" 
+      >
+      </vue-cropper>
+     </div>
+       </el-col>
+       <el-col :span="6">
+          <div class="show-preview" :style="{'width': previews.w + 'px', 'height': previews.h + 'px',  'overflow': 'hidden', 'margin': '5px'}">
+          <div :style="previews.div">
+            <img :src="previews.url" :style="previews.img">
+          </div>
+          
+        </div>
+       <div class="btn">
+          <el-button type="primary" @click="handleCropperConfirm">确认</el-button>
+        <el-button type="danger" @click="handleCropperCancel">取消</el-button>
+       </div>
+       </el-col>
+     </el-row>
+    </el-dialog>
   </el-container>
 </template>
 <script>
+
+import { VueCropper }  from 'vue-cropper' 
 export default {
   name: "meetingIndex",
   inject: ["app"],
+  components: {
+    VueCropper,
+  },
   data() {
     return {
-      
+      centerDialogVisible: false,
+      mettingForm: {
+        title: "",
+        date: [],
+        address: "",
+        logo: '',
+      },
+      isMeeting: false,
+      acitve: true,
+      rules: {
+        title: [{ required: true, message: '请输入会议活动名称', trigger: 'blur' }],
+        date:  [{ required: true, message: '请输入会议活动时间', trigger: 'blur' }],
+        address:  [{ required: true, message: '请输入会议活动地址', trigger: 'blur' }],
+      },
+      previews: {},
+      DialogVisible: false,
+       option: {
+        img: '',                         //裁剪图片的地址
+        info: true,                      //裁剪框的大小信息
+        outputSize: 1,                   // 裁剪生成图片的质量
+        outputType: 'jpeg',              //裁剪生成图片的格式
+        canScale: false,                 // 图片是否允许滚轮缩放
+        autoCrop: true,                  // 是否默认生成截图框
+        autoCropWidth: 150,              // 默认生成截图框宽度
+        autoCropHeight: 150,             // 默认生成截图框高度
+        fixed: false,                    //是否开启截图框宽高固定比例
+        fixedNumber: [4, 4],              //截图框的宽高比例
+        canMoveBox:false,
+        fixedBox: true,
+        canMove: false
+      },
     };
   },
   methods: {
     handleUserAnalysis() {
       this.$router.push()
+    },
+    realTime(data) {
+      this.previews = data
+    },
+    fileChange(file,fileList) {
+      
+      this.getBase64(file.raw).then(res => {
+        this.option.img = res
+      })
+
+      this.DialogVisible = true
+    },
+    handlePictureSuccess(file) {
+        
+    },
+    handleSubmitMeeting() {
+      this.$refs.form.validate((valid) => {
+          if (valid) {
+            alert('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 5;
+      // if (!isJPG) {
+      //   this.$message.error('上传头像图片只能是 JPG 格式!');
+      // }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
+     getBase64(file) {
+      return new Promise(function(resolve, reject) {
+        let reader = new FileReader();
+        let imgResult = "";
+        reader.readAsDataURL(file);
+        reader.onload = function() {
+          imgResult = reader.result;
+        };
+        reader.onerror = function(error) {
+          reject(error);
+        };
+        reader.onloadend = function() {
+          resolve(imgResult);
+        }
+      })
+    },
+    handleCropperConfirm() {
+      this.$refs.cropper.getCropBlob((data) => {
+        this.mettingForm.logo = window.URL.createObjectURL(data)
+      })
+      this.DialogVisible = false
+    },
+    handleCropperCancel() {
+      this.previews = {}
+      this.DialogVisible = false
+    },
+    handelSwitchClass() {
+      this.acitve = !this.acitve
     }
-  }
-};
+}
+}
 </script>
 <style lang="less" scoped>
 body {
@@ -148,6 +332,7 @@ body {
       }
       span {
         vertical-align: top;
+        color:#fff;
       }
     }
   }
@@ -281,5 +466,24 @@ body {
       }
     }
   }
+}
+.avatar {
+  display: inline-block;
+  position: relative;
+  top: -25px;
+}
+.upload {
+  display: inline-block;
+  margin-left: 20px;
+}
+.vue-cropper-content {
+  width: 500px;
+  height: 350px;
+}
+.show-preview {
+  border-radius: 50%
+}
+.btn {
+  margin-top: 150px
 }
 </style>

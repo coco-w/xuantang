@@ -1,32 +1,15 @@
 <template>
   <el-container>
     <el-header>
-      <div class="back">
-        <svg
-          t="1566907818620"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="2677"
-          width="200"
-          height="200"
-        >
-          <path
-            d="M861.9 481.6v60.9c0 16.8-5.2 31.1-15.5 43s-23.7 17.8-40.2 17.8H471.6l139.3 139.8c12 11.4 18.1 25.7 18.1 42.8s-6 31.4-18.1 42.8l-35.7 36.2c-11.7 11.7-26 17.6-42.8 17.6-16.5 0-30.9-5.9-43.3-17.6l-309.5-310c-11.7-11.7-17.6-26-17.6-42.8 0-16.5 5.9-30.9 17.6-43.3l309.5-309.1c12-12 26.5-18.1 43.3-18.1 16.5 0 30.7 6 42.8 18.1l35.7 35.2c12 12.1 18.1 26.5 18.1 43.3 0 16.8-6 31.2-18.1 43.3L471.6 420.8h334.7c16.5 0 29.9 5.9 40.2 17.8 10.3 11.9 15.4 26.2 15.4 43z"
-            p-id="2678"
-            fill="#1AAD19"
-          />
-        </svg>
-      </div>
+    
       <div class="header-mian">
-        <div class="logo">
+        <router-link :to="{name: 'home'}" class="logo">
           <img
             src="http://meeting.hudongxuetang.com/resources20190816130046/tnsPcResources/images/hdxt_logo.png"
             alt
           />
           <span class="tip">专业版</span>
-        </div>
+        </router-link>
         <div class="header-container">
           <div class="header-title">
             <div class="title">中部三省系统工程学会2018学术研讨会通知</div>

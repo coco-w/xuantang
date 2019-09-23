@@ -59,6 +59,23 @@ export default [
         component: () => import('@/views/meeting/guests/guests.vue')
       }
     ]
+  },
+  {
+    path: '/user/homePage/index',
+    name: 'userHomeIndex',
+    component: () => import('@/views/homePage/index.vue'),
+    children: [
+      {
+        path: '/user/homePage/home',
+        name: 'userHomePage',
+        component: () => import('@/views/homePage/home.vue'),
+      },
+      {
+        path: '/user/homePage/register',
+        name: 'userHomeRegister',
+        component: () => import('@/views/homePage/register.vue'),
+      }
+    ]
   }
   
 ]

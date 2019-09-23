@@ -113,16 +113,16 @@
       :close-on-click-modal="false">
       <el-form :model="addForm" >
         <el-form-item label="报名项类型" v-if="addForm.index">
-          <el-radio v-model="addForm.type" label="1" v-show="addForm.type == '1'">填空</el-radio>
-          <el-radio v-model="addForm.type" label="2" v-show="addForm.type == '2'">单选</el-radio>
-          <el-radio v-model="addForm.type" label="3" v-show="addForm.type == '3'">多选</el-radio>
-          <el-radio v-model="addForm.type" label="4" v-show="addForm.type == '4'">日期</el-radio>
+          <el-radio v-model="addForm.type" label="input" v-show="addForm.type == 'input'">填空</el-radio>
+          <el-radio v-model="addForm.type" label="radio" v-show="addForm.type == 'radio'">单选</el-radio>
+          <el-radio v-model="addForm.type" label="checkbox" v-show="addForm.type == 'checkbox'">多选</el-radio>
+          <el-radio v-model="addForm.type" label="date-picker" v-show="addForm.type == 'date-picker'">日期</el-radio>
         </el-form-item>
         <el-form-item label="报名项类型" v-else>
-          <el-radio v-model="addForm.type" label="1">填空</el-radio>
-          <el-radio v-model="addForm.type" label="2">单选</el-radio>
-          <el-radio v-model="addForm.type" label="3">多选</el-radio>
-          <el-radio v-model="addForm.type" label="4">日期</el-radio>
+          <el-radio v-model="addForm.type" label="input">填空</el-radio>
+          <el-radio v-model="addForm.type" label="radio">单选</el-radio>
+          <el-radio v-model="addForm.type" label="checkbox">多选</el-radio>
+          <el-radio v-model="addForm.type" label="date-picker">日期</el-radio>
         </el-form-item>
         <el-form-item label="请填写报名项名称">
           <el-input v-model="addForm.entry" placeholder="请输入内容"></el-input>
@@ -130,11 +130,11 @@
         <el-form-item label="请填写备注（非必填）">
            <el-input type="textarea" placeholder="此备注在报名项名称下面显示" v-model="addForm.remarks"></el-input>
         </el-form-item>
-        <el-form-item v-show="addForm.type === '2'" label="请选择选项展现形式">
+        <el-form-item v-show="addForm.type === 'radio'" label="请选择选项展现形式">
           <el-radio v-model="addForm.selectType" label="1">单选按钮</el-radio>
           <el-radio v-model="addForm.selectType" label="2">下拉选择</el-radio>
         </el-form-item>
-        <Options v-if="showAdd && (addForm.type === '2' || addForm.type === '3')" v-model="addForm.options" @change="handlechange"></Options>
+        <Options v-if="showAdd && (addForm.type === 'radio' || addForm.type === 'checkbox')" v-model="addForm.options" @change="handlechange"></Options>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleCancel">取 消</el-button>
@@ -335,28 +335,29 @@ export default {
         tableData: [{
           index: '1',
           entry: '姓名',
-          type: '1',
+          type: 'input',
           required: '是',
           operation: false,
           remarks: '',
+          
         }, {
           index: '2',
           entry: '单位',
-          type: '1',
+          type: 'input',
           remarks: '',
           required: true,
           operation: false,
         }, {
           index: '3',
           entry: '邮箱',
-          type: '1',
+          type: 'input',
           remarks: '',
           required: true,
           operation: true,
         }, {
           index: '4',
           entry: '入住酒店',
-          type: '1',
+          type: 'input',
           required: true,
           remarks: '',
           operation: true,
@@ -403,18 +404,17 @@ export default {
             render: (h, {row, column, index, item }) => {
               let str = ""
               switch (row.type) {
-                case "1":
+                case "input":
                   str="填空"
                   break;
-                case "2":
+                case "radio":
                   str="单选"
                   break;
-                case "3":
+                case "checkbox":
                   str="多选"
                   break;
-                case "4":
+                case "date-picker":
                   str="日期"
-                  break;
                 default:
                   break;
               }
@@ -673,7 +673,7 @@ export default {
           {
             index: '1',
             entry: '发票类型',
-            type: '2',
+            type: 'input',
             required: "是",
             remarks: '',
             operation: false,
@@ -681,7 +681,7 @@ export default {
           {
             index: '2',
             entry: '发票抬头',
-            type: '1',
+            type: 'input',
             required: "是",
             remarks: '',
             operation: false,
@@ -689,7 +689,7 @@ export default {
           {
             index: '3',
             entry: '纳税人识别号',
-            type: '1',
+            type: 'input',
             required: false,
             remarks: '',
             operation: false,
@@ -737,16 +737,16 @@ export default {
             render: (h, {row, column, index, item }) => {
               let str = ""
               switch (row.type) {
-                case "1":
+                case "input":
                   str="填空"
                   break;
-                case "2":
+                case "radio":
                   str="单选"
                   break;
-                case "3":
+                case "checkbox":
                   str="多选"
                   break;
-                case "4":
+                case "date-picker":
                   str="日期"
                   break;
                 default:
@@ -901,7 +901,7 @@ export default {
       this.checked.forEach(ele => {
         let index = this.enrollOptions.tableData.length + 1
         this.enrollOptions.tableData.push({
-          type: "1",
+          type: "input",
           entry: `${ele}`,
           required: true,
           operation: true,

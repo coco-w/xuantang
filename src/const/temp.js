@@ -21,3 +21,166 @@ export const js = {
     "index": 3
   }]
 }
+export const data = [
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+  {
+    name: '参会认识',
+    value: '我得到的'
+  },
+]
+
+export const formData ={
+  title: {
+    text: '报名信息项',
+    class: 'asd'
+  },
+  tableData:[{"index":"1","entry":"姓名","type":"input","required":"是","operation":false,"remarks":""},{"index":"2","entry":"单位","type":"input","remarks":"","required":true,"operation":false},{"index":"3","entry":"邮箱","type":"input","remarks":"","required":true,"operation":true},{"index":"4","entry":"入住酒店","type":"input","required":true,"remarks":"","operation":true},{"type":"radio","selectType":"1","entry":"大声道","required":true,"operation":true,"remarks":"","options":[{"value":"爱上大早上","disabled":false},{"value":"注册","disabled":false}],"index":5},{"type":"checkbox","selectType":"1","entry":"撒打算写","required":true,"operation":true,"remarks":"","options":[{"value":"这些菜单","disabled":false},{"value":"的撒大 ","disabled":false},{"value":"仔细擦拭打完","disabled":false}],"index":6},{"type":"date-picker","selectType":"1","entry":"大多在现场","required":true,"operation":true,"remarks":"","options":[{"value":"","disabled":false},{"value":"","disabled":false}],"index":7}],
+  tableProps: [
+    {
+      prop: "index",
+      label: "序号",
+      slot: true,
+      render: (h, { row, column, index, item }) => {
+        return (
+          <div>{index + 1}</div>
+        )
+      }
+    },
+    {
+      prop:"entry",
+      label: '报名项名称',
+      slot: true,
+      render: (h, {row, column, index, item }) => {
+        let str = ''
+        if (row.remarks != '') {
+          str = `(${row.remarks})`
+        }
+        if (row.required === true || row.required === "是") {
+          return (
+            <div><span style="color: #ff0000">*</span>{row.entry}
+            <div style="color: #56b78f">{str}</div>
+            </div>
+          )
+        }else {
+          return (
+            <div>{row.entry}
+              <div style="color: #56b78f">{str}</div>
+            </div>
+          )
+        }
+      }
+    },
+    {
+      prop:"type",
+      label: '报名项类型',
+      slot: true,
+      render: (h, {row, column, index, item }) => {
+        let str = ""
+        switch (row.type) {
+          case "1":
+            str="填空"
+            break;
+          case "2":
+            str="单选"
+            break;
+          case "3":
+            str="多选"
+            break;
+          case "4":
+            str="日期"
+            break;
+          default:
+            break;
+        }
+        return (
+          <div>{str}</div>
+        )
+      }
+    },
+    {
+      porp: "required",
+      label: "报名人是否必填",
+      width: '180',
+      slot: true,
+      render: (h, { row, column, index, item }) => {
+        if (row.required === true) {
+          return (
+            <elSwitch 
+            vModel={row.required}
+            >
+            </elSwitch>
+          )
+        }else if (typeof row.required === 'string') {
+          return (
+            <div>
+              {row.required}
+            </div>
+          )
+        }
+        else {
+          return (
+             <elSwitch 
+            vModel={row.required}
+            >
+            </elSwitch>
+          )
+        }
+       
+      }
+    },
+    {
+      prop:"operation",
+      label:"操作",
+      slot: true,
+      render: (h, {row, column, index, item }) => {
+        if (row.operation) {
+          return (
+           <el-popover
+            placement="bottom"
+            trigger="click"
+            width="150">
+            <el-button on-click={this.handleUpdate.bind(this, row)}>修改</el-button>
+            <el-button on-click={this.handleDelete.bind(this, row)}>删除</el-button>
+            <i slot="reference" style="  cursor: pointer;" class="el-icon-more"></i>
+          </el-popover>
+          )
+        }else {
+          return (
+            <div>不可操作</div>
+          )
+        }
+      }
+    }
+  ]
+}

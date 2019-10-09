@@ -86,7 +86,6 @@ export const getRegisterFormData = () => {
     "required": false,
     "value": "",
     "model": `date-picker_${(new Date().getTime()) + '_' + Math.ceil(Math.random() * 99999)}`,
-
     "operation": true,
     "remarks": "",
     "options": [{

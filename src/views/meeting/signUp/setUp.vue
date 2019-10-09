@@ -114,14 +114,14 @@
       <el-form :model="addForm" >
         <el-form-item label="报名项类型" v-if="addForm.index">
           <el-radio v-model="addForm.type" label="input" v-show="addForm.type == 'input'">填空</el-radio>
-          <el-radio v-model="addForm.type" label="radio" v-show="addForm.type == 'radio'">单选</el-radio>
-          <el-radio v-model="addForm.type" label="checkbox" v-show="addForm.type == 'checkbox'">多选</el-radio>
+          <el-radio v-model="addForm.type" label="radio" v-show="addForm.type == 'radio-group'">单选</el-radio>
+          <el-radio v-model="addForm.type" label="checkbox" v-show="addForm.type == 'checkbox-group'">多选</el-radio>
           <el-radio v-model="addForm.type" label="date-picker" v-show="addForm.type == 'date-picker'">日期</el-radio>
         </el-form-item>
         <el-form-item label="报名项类型" v-else>
           <el-radio v-model="addForm.type" label="input">填空</el-radio>
-          <el-radio v-model="addForm.type" label="radio">单选</el-radio>
-          <el-radio v-model="addForm.type" label="checkbox">多选</el-radio>
+          <el-radio v-model="addForm.type" label="radio-group">单选</el-radio>
+          <el-radio v-model="addForm.type" label="checkbox-group">多选</el-radio>
           <el-radio v-model="addForm.type" label="date-picker">日期</el-radio>
         </el-form-item>
         <el-form-item label="请填写报名项名称">
@@ -134,7 +134,7 @@
           <el-radio v-model="addForm.selectType" label="1">单选按钮</el-radio>
           <el-radio v-model="addForm.selectType" label="2">下拉选择</el-radio>
         </el-form-item>
-        <Options v-if="showAdd && (addForm.type === 'radio' || addForm.type === 'checkbox')" v-model="addForm.options" @change="handlechange"></Options>
+        <Options v-if="showAdd && (addForm.type === 'radio-group' || addForm.type === 'checkbox-group')" v-model="addForm.options" @change="handlechange"></Options>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleCancel">取 消</el-button>
@@ -245,6 +245,7 @@
 import myTable from "@/components/myTable";
 import Options from "@/components/options"
 import clonedeep from 'clonedeep'
+import { mapState } from 'vuex'
 export default {
   name: "setUp",
   data() {
@@ -819,6 +820,11 @@ export default {
     myTable,
     Options
   },
+  computed: {
+    ...mapState({
+      meetingInfo:state => state.meeting.nowMeeting
+    }),
+  },
   methods: {
     handleMore(row) {
       console.log(row)
@@ -841,7 +847,21 @@ export default {
       }
       
         this.addForm.remarks.trim()
-      
+      switch (this.addForm.type) {
+        case 'input':
+          this.addForm.model = `input_${(new Date().getTime()) + '_' + Math.ceil(Math.random() * 99999)}`
+          break;
+        case 'radio-group':
+          this.addForm.model = `radio-group_${(new Date().getTime()) + '_' + Math.ceil(Math.random() * 99999)}`
+          break;
+        case 'checkbox-group': 
+          this.addForm.model = `checkbox-group_${(new Date().getTime()) + '_' + Math.ceil(Math.random() * 99999)}`
+          break;
+        case 'date-picker':
+          this.addForm.model = `date-picker_${(new Date().getTime()) + '_' + Math.ceil(Math.random() * 99999)}`
+        default:
+          break;
+      }
       if (this.addForm.index > -1) {
         let index = Number(this.addForm.index) - 1
         this.activeOptions.tableData.splice(index,1,this.addForm)
@@ -905,6 +925,7 @@ export default {
           entry: `${ele}`,
           required: true,
           operation: true,
+          model: `input_${(new Date().getTime()) + '_' + Math.ceil(Math.random() * 99999)}`,
           remarks: '',
           index: `${index}`
         })

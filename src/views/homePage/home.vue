@@ -12,10 +12,11 @@
       </div>
     </div>
     <div class="attend_timing_box">
-      距离会议开始还有xx天xx小时xx分xx秒
+      距离会议开始还有
+      <count-down class="time" :date="new Date(1577520297000)"></count-down>
       <div class="btns">
-        <el-button>报名注册</el-button>
-        <el-button>投稿</el-button>
+        <el-button @click="routerPush">报名注册</el-button>
+        <el-button v-if ='false'>投稿</el-button>
       </div>
     </div>
     <invitation-content></invitation-content>
@@ -23,12 +24,23 @@
 </template>
 
 <script>
+import CountDown from '@/components/CountDown'
 import InvitationContent from "@/components/InvitationContent";
 export default {
   name: 'UserHome',
+  inject: ['index'],
   components: {
-    InvitationContent
+    InvitationContent,
+    CountDown
   },
+  methods:{
+    routerPush() {
+      this.$router.push({path: '/user/homePage/register'})
+      this.index.nowRouter = '1'
+      
+    }
+  },
+  
 };
 </script>
 <style lang="less" scoped>
@@ -82,6 +94,9 @@ export default {
   box-sizing: border-box;
   padding: 0 30px;
   position: relative;
+  .time {
+    display: inline-block;
+  }
   .btns {
     display: inline-block;
     float: right;

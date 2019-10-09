@@ -74,7 +74,27 @@ export default [
         path: '/user/homePage/register',
         name: 'userHomeRegister',
         component: () => import('@/views/homePage/register.vue'),
-      }
+      },
+      {
+        path: '/user/homePage/contribute',
+        name: 'userContribute',
+        component: () => import('@/views/homePage/contribute.vue')
+      },
+      {
+        path: '/user/homePage/notice',
+        name: 'userContribute',
+        component: () => import('@/views/homePage/notice.vue')
+      },
+      {
+        path: '/user/homePage/questionnaire',
+        name: 'userContribute',
+        component: () => import('@/views/homePage/questionnaire.vue')
+      },
+      {
+        path: '/user/homePage/data',
+        name: 'userContribute',
+        component: () => import('@/views/homePage/data.vue')
+      },
     ]
   }
   

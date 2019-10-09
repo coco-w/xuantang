@@ -1,4 +1,4 @@
-import { setToken, getToken } from '@/lib/util'
+import { setToken, getToken, setUserInfo } from '@/lib/util'
 import jwt from 'jsonwebtoken'
 import { register, isRegister, login } from '@/api/app'
 
@@ -24,17 +24,19 @@ const getters = {
 }
 
 const actions = {
-  login({commit}, { email, password }) {
+  login({commit}, { form }) {
     return new Promise((resolve, reject) => {
-      login({email, password}).then(res => {
-        if (res.data) {
-          jwt.verify('asd', res.data.token, (error, decoded) => {
+      login(form).then(res => {
+        if (res.code === 200) {
+          jwt.verify( res.token,'asd', (error,decoded) => {
+            
             if (error) {
-              console.log(error)
+              this.$message.error(error)
               return
             }
-            setToken(res.data.token)
-            resolve(decoded)
+            setToken(res.token)
+            setUserInfo({name: decoded.name, id: decoded.id})
+            resolve({name: decoded.name, id: decoded.id, code: res.code})
           })
         }
       }).catch(res => {

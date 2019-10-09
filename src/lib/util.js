@@ -6,7 +6,17 @@ export const getToken = () => {
 }
 
 export const setToken = (data) => {
+  console.log(data)
   Cookie.set('token', data)
+}
+
+export const getUserInfo = () => {
+  return Cookie.get('user')
+}
+
+export const setUserInfo = (data) => {
+  console.log(data)
+  Cookie.set('user', data)
 }
 
 export const parsingToken = () => {

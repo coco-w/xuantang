@@ -97,6 +97,13 @@
       "unicode_decimal": 58888
     },
     {
+      "icon_id": "5225310",
+      "name": "账号",
+      "font_class": "zhanghao",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
       "icon_id": "5796837",
       "name": "官网设置",
       "font_class": "shezhi",
@@ -118,6 +125,13 @@
       "unicode_decimal": 58937
     },
     {
+      "icon_id": "8080213",
+      "name": "资料",
+      "font_class": "myResource",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
       "icon_id": "8655449",
       "name": "位置",
       "font_class": "weizhi",
@@ -125,11 +139,25 @@
       "unicode_decimal": 58896
     },
     {
+      "icon_id": "8735415",
+      "name": "设 置",
+      "font_class": "shezhi1",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
       "icon_id": "9597248",
       "name": "二维码",
       "font_class": "qrcode",
       "unicode": "e60d",
       "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "10254094",
+      "name": "退出",
+      "font_class": "tuichu",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
     },
     {
       "icon_id": "10803296",

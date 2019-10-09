@@ -4,13 +4,13 @@
       <div class="regist-card">
         <div class="regist-left">
           <div :class="registStatus">
-            报名通道已开启
+            {{signUp}}
           </div>
           <div class="deadline-text">
             距离报名截止
           </div>
           <div class="time">
-            115天 13时 42分 58秒
+              <count-down :date="meetingInfo.date[1]" @overdue='overdue'></count-down>
           </div>
         </div>
         <div class="regist-right">
@@ -90,22 +90,42 @@
   </div>
 </template>
 <script>
-import { countDown } from '@/lib/tools'
+// import { countDown } from '@/lib/tools'
+import CountDown from '@/components/CountDown'
+import { mapState } from 'vuex'
 export default {
   name: 'invitation',
+  components: {
+    CountDown,
+  },
   data() {
     return {
       regist: true,
-      website: 'http://cn.hudongxuetang.com/m/ZJAVV'
+      website: 'http://cn.hudongxuetang.com/m/ZJAVV',
+      signUp: '报名通道已开启',
+      overdued: false,
     }
   },
   computed: {
     registStatus() {
       return this.regist ? `regist-status open` : `regist-status close`
-    }
+    },
+     ...mapState({
+      meetingInfo:state => state.meeting.nowMeeting
+    }),
+  },
+  mounted() {
+    
   },
   methods: {
     handleSwitchRegist() {
+      if (this.overdued) {
+        this.$message({
+          type: 'warning',
+          message: '活动已经结束'
+        })
+        return
+      }
       let str = this.regist ? '是否要关闭报名通道？' : '是否要开启报名通道'
       let msg = this.regist ? '关闭成功' : '开启成功'
       this.$confirm(str, '提示', {
@@ -114,6 +134,11 @@ export default {
           type: 'warning'
         }).then(() => {
           this.regist = !this.regist
+          if (this.regist) {
+            this.signUp = '报名通道已开启'
+          }else {
+            this.signUp = '报名通道已关闭'
+          }
           this.$message({
             type: 'success',
             message: msg
@@ -135,6 +160,11 @@ export default {
     },
     openWeb() {
       window.open(this.website, '_blank');
+    },
+    overdue() {
+      this.overdued = true
+      this.signUp = '报名已结束'
+      this.regist = false
     }
   }
 }

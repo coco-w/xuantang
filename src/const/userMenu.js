@@ -1,26 +1,26 @@
 export const userMenu = [
   {
     title: '主页',
-    link: '',
+    link: '/user/homePage/home',
   },
   {
     title: '报名注册',
-    link: '',
+    link: '/user/homePage/register',
   },
   {
     title: '投稿',
-    link: '',
+    link: '/user/homePage/contribute',
   },
   {
-    title: '公共',
-    link: '',
+    title: '公告', 
+    link: '/user/homePage/notice',
   },
   {
     title: '问卷',
-    link: '',
+    link: '/user/homePage/questionnaire',
   },
   {
     title: '资料',
-    link: '',
+    link: '/user/homePage/data',
   },
 ]

@@ -62,6 +62,7 @@
 <script>
 import {timeChartOptions} from '@/const/chartOptions'
 import { getRegistrationData,browseTheEnrollment,getPaymentStatus } from '@/api/userAnalysis'
+import { mapState } from 'vuex'
 export default {
   name: "userAnalysis",
   data() {
@@ -164,8 +165,13 @@ export default {
       chart: null
     };
   },
+  computed: {
+    ...mapState({
+      meetingInfo:state => state.meeting.nowMeeting
+    }),
+  },
   mounted() {
-    getRegistrationData().then(res => {
+    getRegistrationData(this.meetingInfo.id).then(res => {
       res.forEach((ele, index) => {
         this.registrationData[index].count = ele[0]
         this.registrationData[index].remarkData = ele[1]
@@ -178,13 +184,13 @@ export default {
     this.date = [start,end]
     this.chart = this.$echarts.init(document.getElementById('chart'))
     this.chart.setOption(timeChartOptions)
-    browseTheEnrollment(this.date).then(res => {
+    browseTheEnrollment(this.date, this.meetingInfo.id).then(res => {
       res.time.forEach((ele,index) => {
         res.time[index] = ele.split('T')[0]
       })
       this.updateMyChart(res)
     })
-    getPaymentStatus().then(res => {
+    getPaymentStatus( this.meetingInfo.id ).then(res => {
        res.forEach((ele, index) => {
         this.moneyData[index].count = ele[0]
         this.moneyData[index].remarkData = ele[1]

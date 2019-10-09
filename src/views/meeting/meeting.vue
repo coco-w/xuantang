@@ -12,7 +12,7 @@
         </router-link>
         <div class="header-container">
           <div class="header-title">
-            <div class="title">中部三省系统工程学会2018学术研讨会通知</div>
+            <div class="title">{{meetingInfo.title}}</div>
             <div class="other">
               <span class="webside">http://cn.hudongxuetang.com/m/ZJAVV</span>
               <span class="copy">复制链接</span>
@@ -22,7 +22,7 @@
           </div>
           <div class="right">
             <span>是否允许搜索到此次会议活动</span>
-            <el-switch v-model="switchValue"></el-switch>
+            <el-switch v-model="meetingInfo.search" @change="hanldeChangeSearch"></el-switch>
           </div>
         </div>
       </div>
@@ -30,10 +30,11 @@
     <el-container>
       <el-aside width="200px">
           <el-menu
-            default-active="2"
+            default-active="1"
             class="el-menu-vertical-demo"
             :router='true'
             :default-openeds="openArr"
+
           >
           <template v-for="(item,index) in siderbarList" > 
             <el-menu-item :route="{name: item.link}"  v-if='item.child === undefined' :key="index"  :index="String(index)">
@@ -66,15 +67,21 @@
 </template>
 <script>
 import{ siderbarList } from '@/const/siderbar.js'
+import { meetingChangeSearch } from '@/api/meeting'
+import { mapState } from 'vuex'
 export default {
   name: "",
   data() {
     return {
       switchValue: true,
       siderbarList,
+      
     };
   },
   computed: {
+    ...mapState({
+      meetingInfo:state => state.meeting.nowMeeting
+    }),
     openArr() {
       return ['1','2','3','4','5','6','7']
     }
@@ -82,7 +89,20 @@ export default {
   methods: {
     merge(num1,num2) {
       return `${num1}_${num2}`
+    },
+    hanldeChangeSearch() {
+      meetingChangeSearch(this.meetingInfo.id).then(() => {
+
+      }).catch(error => {
+        if (error) {
+          this.$message.error('切换失败')
+          this.meetingInfo.search = !this.meetingInfo.search
+        }
+      })
     }
+  },
+  mounted() {
+  
   }
 };
 </script>

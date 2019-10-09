@@ -22,23 +22,23 @@
       <div class="hp_basic_main">
         <div class="hp_logo_box">
           <div class="hp_logo_container">
-            <div class="hp_logo_empty" >暂无LOGO</div>
-            <img :src="Invitation.img" alt="这是logo" class="hp_logo_pic">  
+            <div class="hp_logo_empty" v-if="meetingInfo.logo == ''" >暂无LOGO</div>
+            <img :src="meetingInfo.logo" alt="这是logo" class="hp_logo_pic">  
           </div>
           <p>LOGO</p>
         </div>
         <div class="hp_info_box">
           <el-row>
             <div class="info_tit">名称: &nbsp</div>
-            <div class="info_con" v-show="Invitation.title">{{Invitation.title}}</div>
+            <div class="info_con" >{{meetingInfo.title}}</div>
           </el-row>
           <el-row>
             <div class="info_tit">时间: &nbsp</div>
-            <div class="info_con" v-show="Invitation.time">{{Invitation.time}}</div>
+            <div class="info_con" >{{meetingInfo.showTime}}</div>
           </el-row>
           <el-row>
             <div class="info_tit">地点: &nbsp</div>
-            <div class="info_con" v-show="Invitation.address">{{Invitation.address}}</div>
+            <div class="info_con" >{{meetingInfo.address}}</div>
           </el-row>
         </div>
       </div>
@@ -53,16 +53,16 @@
         <div class="poster_row">
           <div class="poster_left">
             <div class="poster_img">
-              <div class="poster_text" v-show='value'>
+              <div class="poster_text" v-show='meetingInfo.showInfo'>
                 <div class="poster_scale">
                   <div class="poster_title">
-                    {{Invitation.title}}
+                    {{meetingInfo.title}}
                   </div>
                   <div class="poster_time">
-                    {{Invitation.time}}
+                    {{meetingInfo.showTime}}
                   </div>
                   <div class="poster_location">
-                    {{Invitation.address}}
+                    {{meetingInfo.address}}
                   </div>
                 </div>  
               </div>
@@ -72,7 +72,7 @@
               <div class="set_poster">
                 <span>是否显示会议信息在海报上</span>
                 <el-switch
-                  v-model="value"
+                  v-model="meetingInfo.showInfo"
                   active-color="#13ce66"
                   inactive-color="#ff4949">
                 </el-switch>
@@ -102,11 +102,11 @@
         <div class="menu_btn">
           <el-button class="hp_btn2" @click="handleAdd">添加模块</el-button>
           <div class="menu_dropdown_btn">
-            <span class="menu_dropdown_sp" @click="handleShowLayer">
+            <span class="menu_dropdown_sp" @click="handleShowControl">
               <i class="el-icon-caret-bottom"></i>
             </span>
           </div>
-          <div class="home_set_layer" v-show="layerShow">
+          <div class="home_set_layer" v-show="value">
             <div class="hs_title">
               官网主页内容布局设置
             </div>
@@ -115,6 +115,7 @@
               <el-switch
                 style="float: right"
                 v-model="navShow"
+                @change="handleShowLayer"
                 active-color="#13ce66"
                 inactive-color="#ff4949">
               </el-switch>
@@ -127,13 +128,13 @@
         <div class="mian_box">
           <div class="nav-wrapper" v-show="navShow">
             <ul class="nav">
-              <li v-for="(item,index) in Invitation.data" :key="index" @click="hanleAnchor(index)">
+              <li v-for="(item,index) in content" :key="index" @click="hanleAnchor(index)">
                 <span>{{item.sort}}</span>
               </li>
             </ul>
           </div>
           <div class="content-wrapper" :style="{marginLeft : navShow ? '242px' : '0px'}">
-            <div class="content-item" v-for="(item,index) in Invitation.data" :key="index" :id="index" v-if="refresh">
+            <div class="content-item" v-for="(item,index) in content" :key="index" :id="index" v-if="refresh">
               <div :class='contentOB(index)'></div>
               <div class="title">
                 <span class="sort">{{item.sort}}</span>
@@ -155,9 +156,9 @@
     </div>
     <el-dialog :visible.sync="dialogEditor" custom-class='hp_diaglog' show-close :close-on-click-modal='lock'>
       <div class="dialog_title">标题</div>
-      <el-input v-if="Invitation.data" v-model="inputValue" placeholder=""></el-input>
+      <el-input v-if="content" v-model="inputValue" placeholder=""></el-input>
       <div class="dialog_title">正文</div>
-      <Editor v-if="dialogEditor" :content='editorContent' @change="contentChange" @close='handleClose'></Editor>
+      <Editor v-if="dialogEditor" :content='editorContent' @change="contentChange" @close="handleClose('add')"></Editor>
     </el-dialog>
     <el-dialog :visible.sync="dialogModel"  title="按住鼠标左键拖动，可以调整模块在官网主页显示的顺序" custom-class='move_diaglog' show-close :close-on-click-modal='lock'>
       <div class="modal">
@@ -193,22 +194,21 @@ import Editor from '@/components/editor'
 import { scrollTo } from 'scroll-ease-efficient'
 import draggable from 'vuedraggable'
 import { getInvitationContent } from '@/api/homePageSetting'
-import { debuglog } from 'util';
-import { setTimeout } from 'timers';
+import { getMeetingContent,updateContent, deleteContent} from '@/api/meeting'
+import { mapState } from 'vuex'
 export default {
   name: 'homePageSetting',
   data() {
     return {
-      value: true,
+      value: false,
       navShow: true,
       inputValue: '',
-      layerShow: false,
       dialogEditor: false,
       editorContent: '',
       lock:false,
       activeIndex: 0,
       initLock: true,
-      Invitation: {
+      content: {
         img: '',
       },
       scrollTo,
@@ -223,15 +223,16 @@ export default {
     Editor,
     draggable,
   },
+  computed: {
+     ...mapState({
+      meetingInfo:state => state.meeting.nowMeeting
+    }),
+  },
   created() {
   },
   mounted() {
-    getInvitationContent('1231').then(res => {
-      this.Invitation = res
-      if (this.Invitation.img !== '') {
-        document.querySelector('.hp_logo_empty').setAttribute('style','display:none')
-        document.querySelector('.hp_logo_pic').setAttribute('style','display:block')
-      }
+    getMeetingContent(this.meetingInfo.contentId).then(res => {
+      this.content = res
       this.setMoveArr()
     })
     let head = document.querySelector('.hp_head');
@@ -283,11 +284,11 @@ export default {
   },
   methods: {
     handleShowLayer() {
-      this.layerShow = !this.layerShow
+      this.meetingInfo.layerShow = !this.meetingInfo.layerShow
     },
     setMoveArr() {
       this.moveArr = []
-       this.Invitation.data.forEach((ele, index) => {
+       this.content.forEach((ele, index) => {
         let obj = {}
         obj.sort = ele.sort
         obj.index = index
@@ -303,19 +304,20 @@ export default {
         this.$nextTick(() => {
           console.log(dom)
           for (let i = 0; i < dom.length; i++) {
-            dom[i].innerHTML = this.Invitation.data[i].content
+            dom[i].innerHTML = this.content[i].content
           }
         })
       }
       if (index !== undefined) {
         console.log('refresh')
-        dom[index].innerHTML = this.Invitation.data[index].content
+        dom[index].innerHTML = this.content[index].content
       }
     },
+    
     openDialog(index) {
       console.log(index)
-      this.editorContent = this.Invitation.data[index].content
-      this.inputValue = this.Invitation.data[index].sort
+      this.editorContent = this.content[index].content
+      this.inputValue = this.content[index].sort
       this.activeIndex = index
       this.dialogEditor = true
     },
@@ -325,14 +327,22 @@ export default {
         this.$message.error('标题不能为空') 
         return
       }
-      this.Invitation.data[this.activeIndex].content = val
-      this.Invitation.data[this.activeIndex].sort = this.inputValue
-      this.refreshContent(this.activeIndex)
-      this.setMoveArr()
-      this.dialogEditor = false
-      this.obServeLock = true
+      updateContent({id: this.meetingInfo.contentId,index: this.activeIndex, srot: this.inputValue, content: val} ).then(()=> {
+         this.content[this.activeIndex].content = val
+          this.content[this.activeIndex].sort = this.inputValue
+          this.refreshContent(this.activeIndex)
+          this.setMoveArr()
+          this.dialogEditor = false
+          this.obServeLock = true
+      }).catch(error => {
+        this.$message.error('修改失败，稍后再试')
+      })
+     
     },
-    handleClose() {
+    handleClose(type) {
+      if (type === 'add') {
+        this.content.splice(this.content.length-1,1)
+      }
       this.dialogEditor = false
       this.dialogModel = false
     },
@@ -343,14 +353,18 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.Invitation.data.splice(index,1)
-          this.setMoveArr()
-          this.initLock = true
-          this.refreshContent()
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+          deleteContent(this.meetingInfo.contentId, index).then(() => {
+            this.content.splice(index,1)
+            this.setMoveArr()
+            this.initLock = true
+            this.refreshContent()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }).catch(error => {
+            this.$message.error('删除失败，稍后再试')
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -360,12 +374,12 @@ export default {
     },
     //增
     handleAdd() {
-      this.Invitation.data.push({})
-      this.activeIndex = this.Invitation.data.length - 1
+      this.content.push({})
+      this.activeIndex = this.content.length - 1
       this.editorContent = ''
       this.inputValue = ''
       this.dialogEditor = true
-       this.initLock = true
+      this.initLock = true
       this.refreshContent()
       this.setMoveArr()
     },
@@ -393,13 +407,16 @@ export default {
         const ele = this.moveArr[i]
         const n = ele.index
         ele.index = i
-        let a = this.Invitation.data.slice(n,n+1)[0]
+        let a = this.content.slice(n,n+1)[0]
         temp.push(a)
       }
-      this.Invitation.data = temp
+      this.content = temp
       this.dialogModel = false
       this.initLock = true
       this.refreshContent()
+    },
+    handleShowControl() {
+      this.value = !this.value
     }
   }
 }
@@ -472,7 +489,6 @@ export default {
               color: #999;
             }
             .hp_logo_pic {
-              display: none;
               width: 100%;
               height: 100%;
               border-radius: 50%;

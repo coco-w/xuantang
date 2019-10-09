@@ -5,7 +5,7 @@
       <div class="user-info-box">
         <div class="user-info-title">
           <span>基本信息</span>
-          <el-button size="small" class="btn">修改</el-button>
+          <el-button size="small" class="btn" @click='hanldeModify'>修改</el-button>
         </div>
         <div class="user-field">
           <div class="list" :style="showItemStyle">
@@ -35,7 +35,7 @@
       <el-form ref="form" :model='models' :rules="rules">
         <el-form-item v-for="(item,index) in formData" :key="index" :label="item.entry" :prop="item.model">
           <!-- <el-input v-if="item.type=='input'" v-model="models[item.model]"></el-input> -->
-          <item :item="item" :models.sync="models" @on-update="itemchange"></item>
+          <item :item="item" :models.sync="models" @on-update="itemChange"></item>
             <!-- <component v-bind:is="'el-'+item.type"  v-model="models[item.model]" @change="handleChange" >
               <template v-if="item.options">
                 <component v-bind:is="'el-'+v.tag" v-for="v,i in item.options" :label="v.value">
@@ -44,7 +44,7 @@
             </component> -->
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
+          <el-button type="primary" @click="onSubmit">提交</el-button>
           <el-button>取消</el-button>
         </el-form-item>
       </el-form>
@@ -56,6 +56,7 @@
 import { getRegisterFormData } from "@/api/userPageRegister";
 import Item from '@/components/item'
 import clonedeep from 'clonedeep'
+import { data } from '@/const/temp.js'
 export default {
   name: "userHomeRegister",
   components: {
@@ -63,9 +64,9 @@ export default {
   },
   data() {
     return {
-      // data,
+      data,
       showItem: false,
-      isRegister: false,
+      isRegister: true,
       formData: [],
       rules:{},
       models: {},
@@ -79,7 +80,12 @@ export default {
       this.formData.forEach(ele => {
         this.models[ele.model] = ele.value
         if (ele.required) {
-          this.rules[ele.model] = [{ required: true, message: '请选择时间', trigger: 'blur' }]
+          console.log(ele)
+          if (ele.type === 'input') {
+            this.rules[ele.model] = [{ required: true, message: '请输入内容', trigger: 'blur' }]
+          }else {
+            this.rules[ele.model] = [{ required: true, message: '请选择选项', trigger: 'blur' }]
+          }
         }
       })
     })
@@ -91,6 +97,9 @@ export default {
     }
   },
   methods: {
+    hanldeModify() {
+      this.isRegister = false
+    },
     handleMore() {
       this.showItem = !this.showItem;
     },
@@ -108,6 +117,7 @@ export default {
       this.$refs.form.validate((valid) => {
           if (valid) {
             alert('submit!');
+            this.isRegister = true
           } else {
             console.log('error submit!!');
             return false;

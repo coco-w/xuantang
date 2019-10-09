@@ -7,7 +7,7 @@
             <el-form :model="form">
               <el-form-item>
                 <el-input v-model="form.username" placeholder="请输入账号">
-                  <i slot="prefix" class="el-icon-mobile-phone"></i>
+                  <i slot="prefix" class="el-icon-user"></i>
                 </el-input>
               </el-form-item>
               <el-form-item>
@@ -17,7 +17,7 @@
               </el-form-item>
             </el-form>
             <div :style="{height: '50px'}">
-               <el-checkbox v-model="remember" :style="{float:'left'}">记住密码</el-checkbox>
+               <el-checkbox v-model="remember" :style="{float:'left'}" >记住账号</el-checkbox>
                <span :style="{float:'right',color: '#31C27C',cursor: 'pointer'}">忘记密码</span>
             </div>
             <div>
@@ -36,10 +36,11 @@
   </div>
 </template>
 <script>
-import {login} from '@/api/app'
+import { setToken } from '@/lib/util'
+import { mapActions } from 'vuex'
 export default {
   name: "meeting",
-  inject: ['app'],
+  
   data() {
     return {
       form: {
@@ -49,15 +50,24 @@ export default {
       remember: true,
     };
   },
+  mounted() {
+    this.form.username = localStorage.getItem('user') || ''
+  },
   methods: {
+    ...mapActions([
+      'login',
+    ]),
     handleLogin() {
-      login(this.form).then(res => {
+      if (this.remember) localStorage.setItem('user', this.form.username)
+      this.login(this.form).then(res => {
         if (res.code === 200) {
-          this.app.saveUserInfo({name: res.name, id: res.id})
-          this.$router.push('/meeting/index')
+          this.$router.push({path: '/meeting/index'})
+        }else {
+          
         }
       })
-    }
+    },
+    
   }
 };
 </script>

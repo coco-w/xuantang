@@ -24,10 +24,10 @@
           </div>
         </div>
       </div>
-      <div class="header-nav">
-        <el-menu class="el-menu-demo" mode="horizontal">
+      <div class="header-nav" v-if='show'>
+        <el-menu class="el-menu-demo" mode="horizontal" :router='true' :default-active="nowRouter">
           <template v-for="(item, index) in userMenu">
-            <el-menu-item :key="index" :index="String(index)">{{item.title}}</el-menu-item>
+            <el-menu-item :ref="item.title" :key="index" :index="String(index)" :route="{path: item.link}">{{item.title}}</el-menu-item>
           </template>
         </el-menu>
       </div>
@@ -48,11 +48,39 @@ import { userMenu } from "@/const/userMenu.js";
 
 export default {
   name: "userHomeIndex",
-  
+   provide() {
+    return{
+      index: this
+    }
+  },
   data() {
     return {
-      userMenu
+      userMenu,
+      nowRouter: '0',
+      show: true
     };
+  },
+  watch: {
+    nowRouter() {
+      this.show = false
+      this.$nextTick(() => {
+        this.show = true
+      })
+    }
+  },
+  mounted() {
+    this.userMenu.forEach((ele,index) => {
+      if (this.$route.path === ele.link) {
+        this.nowRouter = `${index}`
+      }
+    })
+  },
+  beforeRouteLeave(to,from,next) {
+    this.userMenu.forEach((ele,index) => {
+      if (to.path === ele.link) {
+        this.nowRouter = `${index}`
+      }
+    })
   }
 };
 </script>
@@ -113,7 +141,7 @@ export default {
   }
 }
 .container-wapper {
-  min-height: 600px;
+  min-height: 400px;
   padding-bottom: 10px;
   .container {
     width: 980px;
